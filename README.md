@@ -1,52 +1,54 @@
-# Warm Blob in NZ - Han Remake
+# Warm Blob in NZ · Han Remake
 
-## 项目描述
+> 复刻新西兰“暖水团（Warm Blob）”分析：从 SODA 温盐数据计算 Brunt–Väisälä 频率、
+> 密度异常与显著性，并出图；另含 CMEMS 海平面高度示例数据。
 
-本项目重新分析新西兰地区海洋中的暖水团（Warm Blob）事件，重点计算和可视化Brunt-Väisälä频率（浮力频率）的变化。浮力频率是海洋稳定性的重要指标，反映了水层间的密度梯度。
+## 状态
 
-## 主要功能
+**冻结（2024）**：分析已完成，2026-11-25 补文档与 `.gitignore`；数据路径仍需手工改。
 
-- **数据加载**：从SODA数据集加载潜在温度和实际盐度数据。
-- **物理计算**：
-  - 计算绝对盐度和保守温度。
-  - 计算密度异常（sigma0）。
-  - 考虑纬度变化的重力加速度，计算浮力频率（N²）。
-- **异常分析**：计算月平均、季节平均和异常值，特别是暖水团事件期间（1984-1987, 2001, 2017-2018, 2021-2022）。
-- **统计检验**：使用T检验评估异常的显著性。
-- **可视化**：使用Cartopy绘制地图，显示浮力频率异常的等值线图，包括显著性标记。
+## 内容与结论
 
-## 依赖库
+- 用 SODA 月平均温盐计算绝对盐度、保守温度、sigma0 与浮力频率 N²；
+- 对暖水团时段（1984–1987、2001、2017–2018、2021–2022）做月/季平均与异常；
+- t 检验标记显著异常，Cartopy 出图（含显著性打点）。
 
-- numpy
-- xarray
-- matplotlib
-- gsw (Gibbs SeaWater)
-- scipy
-- cartopy
-- sacpy.Map (可选，用于地图绘制)
+## 快速开始
 
-## 使用方法
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install numpy xarray matplotlib scipy gsw cartopy netCDF4 jupyter
+jupyter lab
+```
 
-1. 确保安装所有依赖库。
-2. 更新数据路径：笔记本中硬编码了数据路径（如`r"D:\data\observation\other\soda_monthly2018_2022\soda_1980_2022_potential_temp2.nc"`），请根据实际情况修改。
-3. 运行Jupyter Notebook `calculate brunt_visala freqv2.ipynb`。
-4. 执行单元格以计算和可视化结果。
+三个 notebook 建议按顺序跑：
+
+| Notebook | 作用 |
+|---|---|
+| `calculate brunt_visala freqv2.ipynb` | 读取 SODA，算盐度/温度/密度/N²，导出中间结果 |
+| `figSSTA_MLDv2.ipynb` | 海表温度异常与混合层深度图 |
+| `fig_sla.ipynb` | 海平面高度异常（用仓库内 CMEMS `.nc`） |
+
+**先改数据路径**：notebook 里硬编码了本机路径（如 `D:\data\observation\...`），
+请改成自己的 SODA 目录。仓库内只附一个 CMEMS SSH 月度文件（82MB），SODA 原始数据需自行获取。
+
+## 目录结构
+
+| 路径 | 说明 |
+|---|---|
+| `calculate brunt_visala freqv2.ipynb` | 核心物理量计算 |
+| `figSSTA_MLDv2.ipynb` / `fig_sla.ipynb` | 出图 |
+| `cmems_obs-...P1M-m_...nc` | CMEMS 海平面高度示例数据（82MB） |
+| `hanremake/Fig1.png` | 复刻图成品 |
+
+> 82MB 的 `.nc` 与 20MB 的 notebook 输出属历史遗留；新数据请放 `data/`（已被 `.gitignore` 忽略）。
 
 ## 数据来源
 
-- SODA (Simple Ocean Data Assimilation) 数据集：潜在温度和盐度数据。
-- 时间范围：1980-2022。
-- 空间范围：全球，但聚焦新西兰地区。
+- SODA：Simple Ocean Data Assimilation 月平均温盐（需自行下载，版本以 notebook 内路径为准）。
+- CMEMS：`cmems_obs-sl_glo_phy-ssh_my_allsat-l4-duacs-0.25deg_P1M-m`（哥白尼海洋服务）。
 
-## 维护建议
+## 许可
 
-- **数据路径**：将硬编码路径移至配置文件或环境变量，便于不同环境使用。
-- **参数化**：提取关键参数（如深度层、时间范围）为变量，便于调整。
-- **错误处理**：添加数据加载和计算的异常处理。
-- **文档**：在笔记本中添加更多注释，解释物理公式和步骤。
-- **版本控制**：使用Git跟踪更改，确保数据文件不纳入版本控制（添加.gitignore）。
-- **测试**：添加单元测试验证计算结果。
-- **性能**：对于大数据集，考虑优化内存使用。
-
-图像如下
-![Alt text](./hanremake/Fig1.png)
+未声明开源许可证，默认保留所有权利。
+SODA/CMEMS 数据遵循各自发布方的使用条款，不在本仓库授权范围内。
